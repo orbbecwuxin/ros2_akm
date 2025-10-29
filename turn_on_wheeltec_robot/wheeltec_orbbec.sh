@@ -1,0 +1,1 @@
+echo 'KERNEL=="ttyCH343USB*", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d4", ATTRS{serial}=="5897131087", MODE:="0666", GROUP:="dialout", SYMLINK+="wheeltec_controller"' > /etc/udev/rules.d/wheeltec_orbbec.rules

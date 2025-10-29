@@ -1,0 +1,94 @@
+# ==============================
+# ROS2 Laser Scan Matcher 参数配置
+# 节点名: laser_scan_matcher
+# 功能: 基于激光雷达的ICP扫描匹配里程计估计
+# 来源: CCNY Robotics Lab (Ivan Dryanovski, William Morris)
+# ROS2移植: ros2_laser_scan_matcher
+# ==============================
+
+laser_scan_matcher:
+  ros__parameters:
+
+    #-------------------------------
+    # 输出控制
+    #-------------------------------
+
+    publish_odom: "odom_lidar"        # 发布激光里程计的 topic 名，若为空则不发布
+    publish_tf: true                 # 是否发布 tf (odom -> base_link)-----------------------------------------
+
+    #-------------------------------
+    # 坐标系配置
+    #-------------------------------
+
+    base_frame: "base_footprint"      # 机器人底盘坐标系（与 slam_toolbox 保持一致）
+    odom_frame: "odom_lidar"                # 里程计参考坐标系
+    map_frame: "map"                  # 地图坐标系（仅在扩展时使用）
+    laser_frame: "laser_frame"        # 激光雷达坐标系（需与TF一致）-----------------------------------------------
+
+    #-------------------------------
+    # 关键帧生成条件
+    #-------------------------------
+
+    kf_dist_linear: 0.10              # 平移距离超过此值触发关键帧 (m)
+    kf_dist_angular: 0.174533         # 旋转角度超过此值触发关键帧 (rad) = 10°
+
+    #-------------------------------
+    # CSM算法参数 (Canonical Scan Matcher)
+    #-------------------------------
+
+    max_angular_correction_deg: 45.0  # 允许的最大角度修正 (deg)
+    max_linear_correction: 0.5        # 允许的最大平移修正 (m)
+    max_iterations: 10                # ICP最大迭代次数
+    epsilon_xy: 0.000001              # ICP停止阈值 - 平移误差 (m)
+    epsilon_theta: 0.000001           # ICP停止阈值 - 旋转误差 (rad)
+    max_correspondence_dist: 0.3      # 最大对应点距离 (m)
+    sigma: 0.01                       # 扫描测量噪声 (m)
+    use_corr_tricks: 1                # 启用快速对应点搜索技巧 (推荐保持为1)
+
+    #-------------------------------
+    # 重启机制 (当误差过大时重启匹配)
+    #-------------------------------
+
+    restart: 0                        # 是否启用重启功能
+    restart_threshold_mean_error: 0.01 # 平均误差阈值 (m)
+    restart_dt: 1.0                   # 位移阈值触发重启 (m)
+    restart_dtheta: 0.1               # 角度阈值触发重启 (rad)
+
+    #-------------------------------
+    # 聚类和角度邻域
+    #-------------------------------
+
+    clustering_threshold: 0.25        # 聚类阈值 (m)
+    orientation_neighbourhood: 20     # 邻域射线数量，用于估计局部表面方向
+
+    #-------------------------------
+    # ICP匹配方式与角度测试
+    #-------------------------------
+
+    use_point_to_line_distance: 1     # 使用点到线ICP (1) 或点到点ICP (0)
+    do_alpha_test: 0                  # 是否根据角度剔除对应关系
+    do_alpha_test_thresholdDeg: 20.0  # alpha测试阈值 (deg)
+
+    #-------------------------------
+    # 外点剔除策略
+    #-------------------------------
+
+    outliers_maxPerc: 0.9             # 最大保留对应比例(0.9=保留90%)
+    outliers_adaptive_order: 0.7      # 自适应外点剔除百分位
+    outliers_adaptive_mult: 2.0       # 自适应外点误差放大系数
+    outliers_remove_doubles: 1        # 不允许同一点被多次匹配
+
+    #-------------------------------
+    # 可见性与加权配置
+    #-------------------------------
+
+    do_visibility_test: 0             # 是否启用可见性检测 (点不在视野则不参与)
+    use_ml_weights: 0                 # 是否基于角度(incidence beta)加权
+    use_sigma_weights: 0              # 是否基于测量sigma加权 (需要sensor提供σ)
+
+    #-------------------------------
+    # 调试和协方差估计
+    #-------------------------------
+
+    do_compute_covariance: 0          # 是否计算ICP结果协方差 (性能代价高)
+    debug_verify_tricks: 0            # 检查对应点技巧是否正确
